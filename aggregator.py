@@ -1,9 +1,9 @@
 '''
 aggregator.py
 
-An aggregator for a scatter-gather pattern collecting state of charge information from units
+An aggregator for a scatter-gather pattern collecting state of charge information from units.
 
-The configuration comes from aggregator.ini.
+The configuration comes from the 'aggregator.ini'.
 
 Copyright 2017 Janne Valtanen
 '''
@@ -49,7 +49,7 @@ class Scatterer(threading.Thread):
 
     def run(self):
         '''
-        The 'run' part of the thread that does the work.
+        The 'run' part of the thread that sends out the state queries on a set interval.
         '''
 
         print "Scatterer started"
@@ -61,9 +61,9 @@ class Scatterer(threading.Thread):
         while self.running:
             if time.time() - starttime > self.pollinterval:
                 for unitid in self.unitids:
-                    # Mark in the data storage where the query was sent
+                    # Mark in the data storage where and when the query was sent.
                     self.datastorage.query_started(unitid)
-                    # Send the query
+                    # Send the query.
                     self.channel.basic_publish(exchange='units', routing_key=unitid, body='status')
                 starttime = time.time()
 
@@ -81,7 +81,7 @@ class Scatterer(threading.Thread):
 class Gatherer(threading.Thread):
     '''
     The Gatherer class that implements the gather part of the scatter-gather pattern.
-    Note: This does not yet analyze the results. AnalyzerPoster is for that purpose. 
+    Note: This class does not yet analyze the results. AnalyzerPoster is for that purpose. 
     Runs as a separate thread. 
 
     Parameters:
@@ -189,7 +189,7 @@ class AnalyzerPoster(threading.Thread):
         data = {}
         old_data = {}
         while self.running:
-            # If interval passed then start analyzing the results.
+            # If interval has passed then start analyzing the results.
             if time.time() - start_time > self.results_interval:
                 # Store the previous data in case all results from latest query have not 
                 # been received yet.
@@ -204,7 +204,7 @@ class AnalyzerPoster(threading.Thread):
                         if current_time - data[unitid]['QueryTime'] > self.unit_timeout:
                             data[unitid]['Active'] = False
 
-                        # Copy from old data if data not outdated (no timeout)
+                        # Copy from old data if data not outdated (no timeout).
                         elif unitid in old_data and 'ReceivedTime' in old_data[unitid]:
                             data[unitid] = old_data[unitid]
                         else:
@@ -226,14 +226,14 @@ class AnalyzerPoster(threading.Thread):
                     if not unit['Active']:
                         continue
                     
-                    # Get SoC
+                    # Get the SoC value.
                     soc = unit['SoC']
 
-                    # Check SoC against boundaries.
+                    # Check the SoC against boundaries.
                     if soc < minimumsoc or soc > maximumsoc:
                         out_of_boundaries.append(unitid)
 
-                    # Add to remaining capacity, SoC sum and active unit count
+                    # Add to remaining capacity, SoC sum and active unit count.
                     remaining_capacity += soc*unit['TotalCapacity']
                     soc_sum += soc
                     active_count += 1
@@ -305,6 +305,9 @@ class DataStorage:
         '''
         Called when the query is started. 
         This creates the entry for the unit ID and sets query start timestamp.
+
+        Parameters:
+        - unitid: The ID of the unit where the query was sent to.
         '''
 
         self.lock.acquire()
@@ -316,7 +319,7 @@ class DataStorage:
         '''
         Get a copy of all the data in storage.
         
-        Returns: The copy of data in the storage in a dictionary.
+        Returns: The copy of the data in the storage in a dictionary.
         '''
 
         self.lock.acquire()

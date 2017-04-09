@@ -105,7 +105,7 @@ class Unit(threading.Thread):
         self.channel.stop_consuming()
 
 def result_callback(ch, method, properties, body):
-    # Results callback that will just display the results on console.
+    # Results callback that will just display the results on the console.
     print "Got results from aggerator: "+body
 
 if __name__ == '__main__':
