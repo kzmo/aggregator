@@ -98,12 +98,12 @@ if __name__ == '__main__':
     active_unit_ids = unitids[0: int(round(len(unitids)*active_percentage/100.0))]
 
     oob_percentage = float(args.oob)
-    out_of_bounds = active_unit_ids[0: int(round(len(unitids)*oob_percentage/100.0))]
+    out_of_bounds = active_unit_ids[0: int(round(len(active_unit_ids)*oob_percentage/100.0))]
 
     inactive_unit_ids = filter(lambda x: x not in active_unit_ids, unitids)
     responding_inactive_percentage = 100.0-float(args.nonresponding)
     responding_inactive_unit_ids = \
-        inactive_unit_ids[0: int(round(len(unitids)*responding_inactive_percentage/100.0))]    
+        inactive_unit_ids[0: int(round(len(inactive_unit_ids)*responding_inactive_percentage/100.0))]    
 
     print 'Active units: '+', '.join(active_unit_ids)
     print 'Out of bound units: '+', '.join(out_of_bounds)
@@ -144,11 +144,6 @@ if __name__ == '__main__':
             channel.connection.process_data_events(time_limit=1) # 1 second
     except:
         pass
-    #try:
-    #    while True:
-    #        pass
-    #except:
-    #    pass
 
     for unit in units:
         unit.kill()
